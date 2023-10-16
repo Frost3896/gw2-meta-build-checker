@@ -2,30 +2,32 @@ import requests
 import functools
 
 
-class API:
-    def __init__(self, api_key: str):
-        self.api_key = api_key
+class Api:
+    def __init__(self) -> None:
+        self.api_key = None
         self._clear_cache()
 
-    def _clear_cache(self):
+    def _clear_cache(self) -> None:
         # Clear the cache for methods that need to be invalidated
+        self.check_key.cache_clear()
         self.get_account_name.cache_clear()
         self.get_character_names.cache_clear()
         self.get_profession_name.cache_clear()
 
-    def set_api_key(self, api_key: str):
-        if self.api_key != api_key:
-            self.api_key = api_key
-            self._clear_cache()
-
-    def get_endpoint_v2(self, endpoint: str):
+    def _get_endpoint_v2(self, endpoint: str):
         url = f"https://api.guildwars2.com/v2/{endpoint}"
         headers = {"Authorization": f"Bearer {self.api_key}"}
         return requests.get(url, headers=headers).json()
 
+    def set_api_key(self, api_key: str) -> None:
+        if self.api_key != api_key:
+            self.api_key = api_key
+            self._clear_cache()
+
+    @functools.lru_cache(maxsize=None)
     def check_key(self) -> bool:
         # check if api key is valid
-        tokeninfo = self.get_endpoint_v2("tokeninfo")
+        tokeninfo = self._get_endpoint_v2("tokeninfo")
         if tokeninfo == "Invalid access token":
             return False
         # check if correct permissions are set
@@ -42,53 +44,59 @@ class API:
 
     @functools.lru_cache(maxsize=None)
     def get_account_name(self) -> str:
-        account_name = self.get_endpoint_v2("account")
+        account_name = self._get_endpoint_v2("account")
         return account_name["name"]
 
     @functools.lru_cache(maxsize=None)
     def get_character_names(self) -> list[str]:
-        character_names = self.get_endpoint_v2("characters")
+        character_names = self._get_endpoint_v2("characters")
         return character_names
 
     @functools.lru_cache(maxsize=None)
     def get_profession_name(self, character: str) -> str:
-        profession_name = self.get_endpoint_v2(
+        profession_name = self._get_endpoint_v2(
             f"characters/{character}/core"
         )
         return profession_name["profession"]
 
     @functools.lru_cache(maxsize=None)
+    def get_skill_name(self, skill_id: int) -> str:
+        skill_name = self._get_endpoint_v2(f"skills/{skill_id}")
+        return skill_name["name"]
+
+    @functools.lru_cache(maxsize=None)
     def get_specialization_name(self, specialization_id: int) -> str:
-        specialization_name = self.get_endpoint_v2(
+        specialization_name = self._get_endpoint_v2(
             f"specializations/{specialization_id}"
         )
         return specialization_name["name"]
 
     @functools.lru_cache(maxsize=None)
-    def get_skill_name(self, skill_id: int) -> str:
-        skill_name = self.get_endpoint_v2(f"skills/{skill_id}")
-        return skill_name["name"]
-
-    @functools.lru_cache(maxsize=None)
     def get_trait_name(self, trait_id: int) -> str:
-        trait_name = self.get_endpoint_v2(f"traits/{trait_id}")
+        trait_name = self._get_endpoint_v2(f"traits/{trait_id}")
         return trait_name["name"]
 
+    @functools.lru_cache(maxsize=None)
+    def get_item_stat_name(self, item_stat_id: int) -> str:
+        item_stat_name = self._get_endpoint_v2(f"itemstats/{item_stat_id}")
+        return item_stat_name["name"]
+
     def get_build_templates(self, character: str):
-        build_templates = self.get_endpoint_v2(
+        build_templates = self._get_endpoint_v2(
             f"characters/{character}/buildtabs?tabs=all"
         )
         return build_templates
 
     def get_equipment_templates(self, character: str):
-        equipment_templates = self.get_endpoint_v2(
+        equipment_templates = self._get_endpoint_v2(
             f"characters/{character}/equipmenttabs?tabs=all"
         )
         return equipment_templates
 
 
 if __name__ == "__main__":
-    api = API("API-KEY")
+    api = Api()
+    api_key = api.set_api_key("API-KEY")
     key_valid = api.check_key()
     account_name = api.get_account_name()
     characters = api.get_character_names()
