@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from typing import List
 
 
 @dataclass
@@ -20,12 +21,12 @@ class Specialization:
     """Represent a specialization with an ID, name, and a list of traits."""
     specialization_id: int
     specialization_name: str
-    traits: list[Trait]
+    traits: List[Trait]
 
 
 @dataclass
 class Build:
     """Represent a build with a name, skills, and specializations."""
     build_name: str
-    skills: list[Skill]
-    specializations: list[Specialization]
+    skills: List[Skill]
+    specializations: List[Specialization]
