@@ -1,5 +1,7 @@
 import requests
 import functools
+from build import Skill, Trait, Specialization, Build
+from equipment import Equipment  # more to follow
 
 
 class Api:
@@ -22,6 +24,67 @@ class Api:
         url = f"https://api.guildwars2.com/v2/{endpoint}"
         headers = {"Authorization": f"Bearer {self._api_key}"}
         return requests.get(url, headers=headers).json()
+
+    def _parse_build_templates(
+        self, buildtabs_json
+    ) -> list[Build]:
+        """Parse build templates from JSON data."""
+        build_templates = []
+        for item in buildtabs_json:
+            build_data = item["build"]
+            build_name = build_data["name"]
+            skills_data = build_data["skills"]
+            specializations_data = build_data["specializations"]
+            # Parse skills
+            skills = []
+            for skill_type, skill in skills_data.items():
+                if isinstance(skill, int):
+                    skill_id = skill
+                    skills.append(
+                        Skill(
+                            skill_id=skill_id,
+                            skill_name=self.get_skill_name(skill_id)
+                        )
+                    )
+                elif isinstance(skill, list):
+                    skills.extend([
+                        Skill(
+                            skill_id=skill_id,
+                            skill_name=self.get_skill_name(skill_id)
+                        )
+                        for skill_id in skill
+                    ])
+            # Parse specializations and traits
+            specializations = [
+                Specialization(
+                    specialization_id=specialization["id"],
+                    specialization_name=self.get_specialization_name(
+                        specialization["id"]
+                    ),
+                    traits=[
+                        Trait(
+                            trait_id=trait_id,
+                            trait_name=self.get_trait_name(trait_id)
+                        )
+                        for trait_id in specialization["traits"]
+                    ]
+                )
+                for specialization in specializations_data
+            ]
+            build = Build(
+                build_name=build_name,
+                skills=skills,
+                specializations=specializations
+            )
+            build_templates.append(build)
+        return build_templates
+
+    def _parse_equipment_templates(
+        self, equipmenttabs_json
+    ) -> list[Equipment]:
+        """Parse equipment templates from JSON data."""
+        equipment_templates = []
+        return equipment_templates
 
     def set_api_key(self, api_key: str) -> None:
         """Set the API key and clear the cache if the key changes."""
@@ -69,7 +132,9 @@ class Api:
     @functools.lru_cache(maxsize=None)
     def get_skill_name(self, skill_id: int) -> str:
         """Get the name of a skill by its ID."""
-        skill_name = self._get_endpoint_v2(f"skills/{skill_id}")
+        skill_name = self._get_endpoint_v2(
+            f"skills/{skill_id}"
+        )
         return skill_name["name"]
 
     @functools.lru_cache(maxsize=None)
@@ -83,26 +148,36 @@ class Api:
     @functools.lru_cache(maxsize=None)
     def get_trait_name(self, trait_id: int) -> str:
         """Get the name of a trait by its ID."""
-        trait_name = self._get_endpoint_v2(f"traits/{trait_id}")
+        trait_name = self._get_endpoint_v2(
+            f"traits/{trait_id}"
+        )
         return trait_name["name"]
 
     @functools.lru_cache(maxsize=None)
     def get_item_stat_name(self, item_stat_id: int) -> str:
         """Get the name of an item stat by its ID."""
-        item_stat_name = self._get_endpoint_v2(f"itemstats/{item_stat_id}")
+        item_stat_name = self._get_endpoint_v2(
+            f"itemstats/{item_stat_id}"
+        )
         return item_stat_name["name"]
 
-    def get_build_templates(self, character: str):
+    def get_build_templates(self, character: str) -> list[Build]:
         """Get build templates for a character."""
-        build_templates = self._get_endpoint_v2(
+        buildtabs_json = self._get_endpoint_v2(
             f"characters/{character}/buildtabs?tabs=all"
+        )
+        build_templates = self._parse_build_templates(
+            buildtabs_json
         )
         return build_templates
 
-    def get_equipment_templates(self, character: str):
+    def get_equipment_templates(self, character: str) -> list[Equipment]:
         """Get equipment templates for a character."""
-        equipment_templates = self._get_endpoint_v2(
+        equipmenttabs_json = self._get_endpoint_v2(
             f"characters/{character}/equipmenttabs?tabs=all"
+        )
+        equipment_templates = self._parse_equipment_templates(
+            equipmenttabs_json
         )
         return equipment_templates
 
