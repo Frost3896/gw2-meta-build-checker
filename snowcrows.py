@@ -1,6 +1,8 @@
 import requests
 import functools
 from bs4 import BeautifulSoup
+from build import Skill, Trait, Specialization, Build
+from equipment import Equipment # more to follow
 
 
 class Snowcrows:
@@ -27,13 +29,13 @@ class Snowcrows:
         website = requests.get(url, headers=self._HEADERS)
         return BeautifulSoup(website.content, "html.parser")
 
-    def _parse_build(self) -> None:
+    def _parse_build(self) -> Build:
         # To be done
-        pass
+        return build
 
-    def _parse_equipment(self) -> None:
+    def _parse_equipment(self) -> Equipment:
         # To be done
-        pass
+        return equipment
 
     @functools.lru_cache(maxsize=None)
     def get_build_names(self, profession_name: str) -> list[str]:
