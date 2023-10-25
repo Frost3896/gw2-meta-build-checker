@@ -1,6 +1,6 @@
 import requests
 import functools
-from build import Skill, Trait, Specialization, Build
+from build import Skill, Specialization, Trait, Build
 from equipment import Equipment  # more to follow
 
 
@@ -35,10 +35,20 @@ class Api:
             build_name = build_data["name"]
             skills_data = build_data["skills"]
             specializations_data = build_data["specializations"]
+            # Skip build if build name is empty
+            if not build_name:
+                continue
             # Parse skills
             skills = []
             for skill_type, skill in skills_data.items():
-                if isinstance(skill, int):
+                if not skill:
+                    skills.append(
+                        Skill(
+                            skill_id=0,
+                            skill_name=""
+                        )
+                    )
+                elif isinstance(skill, int):
                     skill_id = skill
                     skills.append(
                         Skill(
@@ -47,34 +57,62 @@ class Api:
                         )
                     )
                 elif isinstance(skill, list):
-                    skills.extend([
-                        Skill(
-                            skill_id=skill_id,
-                            skill_name=self.get_skill_name(skill_id)
-                        )
-                        for skill_id in skill
-                    ])
+                    for skill_id in skill:
+                        if not skill_id:
+                            skills.append(
+                                Skill(
+                                    skill_id=0,
+                                    skill_name=""
+                                )
+                            )
+                        elif isinstance(skill_id, int):
+                            skills.append(
+                                Skill(
+                                    skill_id=skill_id,
+                                    skill_name=self.get_skill_name(skill_id)
+                                )
+                            )
             # Parse specializations and traits
-            specializations = [
-                Specialization(
-                    specialization_id=specialization["id"],
-                    specialization_name=self.get_specialization_name(
-                        specialization["id"]
-                    ),
-                    traits=[
-                        Trait(
-                            trait_id=trait_id,
-                            trait_name=self.get_trait_name(trait_id)
+            specializations = []
+            traits = []
+            for specialization in specializations_data:
+                if not specialization["id"]:
+                    specializations.append(
+                        Specialization(
+                            specialization_id=0,
+                            specialization_name=""
                         )
-                        for trait_id in specialization["traits"]
-                    ]
-                )
-                for specialization in specializations_data
-            ]
+                    )
+                elif isinstance(specialization["id"], int):
+                    specializations.append(
+                        Specialization(
+                            specialization_id=specialization["id"],
+                            specialization_name=self.get_specialization_name(
+                                specialization["id"]
+                            )
+                        )
+                    )
+                for trait_id in specialization["traits"]:
+                    if not trait_id:
+                        traits.append(
+                            Trait(
+                                trait_id=0,
+                                trait_name=""
+                            )
+                        )
+                    elif isinstance(trait_id, int):
+                        traits.append(
+                            Trait(
+                                trait_id=trait_id,
+                                trait_name=self.get_trait_name(trait_id)
+                            )
+                        )
+            # Create a build with name, skills, specializations and traits
             build = Build(
                 build_name=build_name,
                 skills=skills,
-                specializations=specializations
+                specializations=specializations,
+                traits=traits
             )
             build_templates.append(build)
         return build_templates
