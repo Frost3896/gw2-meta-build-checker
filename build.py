@@ -1,32 +1,31 @@
 from dataclasses import dataclass
-from typing import List
 
 
 @dataclass
 class Skill:
-    """Represent a skill with a skill ID and skill name."""
+    """Represent a skill with an ID and name."""
     skill_id: int
     skill_name: str
 
 
 @dataclass
+class Specialization:
+    """Represent a specialization with an ID and name."""
+    specialization_id: int
+    specialization_name: str
+
+
+@dataclass
 class Trait:
-    """Represent a trait with a trait ID and trait name."""
+    """Represent a trait with an ID and name."""
     trait_id: int
     trait_name: str
 
 
 @dataclass
-class Specialization:
-    """Represent a specialization with an ID, name, and a list of traits."""
-    specialization_id: int
-    specialization_name: str
-    traits: List[Trait]
-
-
-@dataclass
 class Build:
-    """Represent a build with a name, skills, and specializations."""
+    """Represent a build with a name, skills, specializations and traits."""
     build_name: str
-    skills: List[Skill]
-    specializations: List[Specialization]
+    skills: list[Skill]
+    specializations: list[Specialization]
+    traits: list[Trait]
