@@ -186,6 +186,14 @@ class Api:
         return trait_name["name"]
 
     @functools.lru_cache(maxsize=None)
+    def get_item_name(self, item_id: int) -> str:
+        """Get the name of an item by its ID."""
+        item_name = self._get_endpoint_v2(
+            f"items/{item_id}"
+        )
+        return item_name["name"]
+
+    @functools.lru_cache(maxsize=None)
     def get_stats_name(self, stats_id: int) -> str:
         """Get the name of stats by its ID."""
         stats_name = self._get_endpoint_v2(
@@ -216,7 +224,7 @@ class Api:
 
 if __name__ == "__main__":
     api = Api()
-    api.set_api_key("API-KEY")
+    api.set_api_key("<API_KEY>")
     key_valid = api.check_key()
     if key_valid:
         permissions = api.get_permissions()
