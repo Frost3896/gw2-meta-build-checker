@@ -1,8 +1,22 @@
 import requests
 import functools
 from bs4 import BeautifulSoup
-from build import Skill, Trait, Specialization, Build
-from equipment import Equipment # more to follow
+from build import (
+    Skill,
+    Specialization,
+    Trait,
+    Build
+)
+from equipment import (
+    Stats,
+    Upgrade,
+    Infusion,
+    Relic,
+    Armor,
+    Weapon,
+    Accessory,
+    Equipment
+)
 
 
 class Snowcrows:
