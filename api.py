@@ -48,10 +48,10 @@ class Api:
             build_name = build_data["name"]
             skills_data = build_data["skills"]
             specializations_data = build_data["specializations"]
-            # Skip build if build name is empty
+            # Skip build if build name is empty.
             if not build_name:
                 continue
-            # Parse skills
+            # Parse skills.
             skills = []
             for skill_type, skill in skills_data.items():
                 if not skill:
@@ -85,7 +85,7 @@ class Api:
                                     skill_name=self.get_skill_name(skill_id)
                                 )
                             )
-            # Parse specializations and traits
+            # Parse specializations and traits.
             specializations = []
             traits = []
             for specialization in specializations_data:
@@ -120,7 +120,7 @@ class Api:
                                 trait_name=self.get_trait_name(trait_id)
                             )
                         )
-            # Create a build with name, skills, specializations and traits
+            # Create a build with a name, skills, specializations and traits.
             build = Build(
                 build_name=build_name,
                 skills=skills,
