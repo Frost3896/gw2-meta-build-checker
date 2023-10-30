@@ -14,10 +14,9 @@ class Api:
 
     def _clear_cache(self) -> None:
         """Clear the cache for all decorated methods."""
-        self.get_key_permissions.cache_clear()
+        self.get_permissions.cache_clear()
         self.get_account_name.cache_clear()
-        self.get_character_names.cache_clear()
-        self.get_profession_name.cache_clear()
+        self.get_characters.cache_clear()
 
     def _get_endpoint_v2(self, endpoint: str):
         """Perform a GET request to the API and return the JSON response."""
@@ -133,15 +132,15 @@ class Api:
     def check_key(self) -> bool:
         """Check if the API key is valid."""
         tokeninfo = self._get_endpoint_v2("tokeninfo")
-        if tokeninfo == "Invalid access token":
+        if "text" in tokeninfo:
             return False
         return True
 
     @functools.lru_cache(maxsize=None)
-    def get_key_permissions(self) -> list[str]:
-        """Get the permissions for the API key."""
-        key_permissions = self._get_endpoint_v2("tokeninfo")
-        return key_permissions["permissions"]
+    def get_permissions(self) -> list[str]:
+        """Get the permissions associated with the API key."""
+        permissions = self._get_endpoint_v2("tokeninfo")
+        return permissions["permissions"]
 
     @functools.lru_cache(maxsize=None)
     def get_account_name(self) -> str:
@@ -150,18 +149,17 @@ class Api:
         return account_name["name"]
 
     @functools.lru_cache(maxsize=None)
-    def get_character_names(self) -> list[str]:
-        """Get a list of character names associated with the API key."""
+    def get_characters(self) -> dict[str, str]:
+        """Get characters and their profession associated with the API key."""
         character_names = self._get_endpoint_v2("characters")
-        return character_names
-
-    @functools.lru_cache(maxsize=None)
-    def get_profession_name(self, character: str) -> str:
-        """Get the profession name of a character."""
-        profession_name = self._get_endpoint_v2(
-            f"characters/{character}/core"
-        )
-        return profession_name["profession"]
+        profession_names = []
+        for character_name in character_names:
+            profession_name = self._get_endpoint_v2(
+                f"characters/{character_name}/core"
+            )
+            profession_names.append(profession_name["profession"])
+        characters = dict(zip(character_names, profession_names))
+        return characters
 
     @functools.lru_cache(maxsize=None)
     def get_skill_name(self, skill_id: int) -> str:
@@ -221,24 +219,18 @@ if __name__ == "__main__":
     api.set_api_key("API-KEY")
     key_valid = api.check_key()
     if key_valid:
-        key_permissions = api.get_key_permissions()
-        if ("account" in key_permissions and
-            "characters" in key_permissions and
-            "builds" in key_permissions and
-                "inventories" in key_permissions):
+        permissions = api.get_permissions()
+        if ("account" in permissions and "characters" in permissions and
+                "builds" in permissions and "inventories" in permissions):
             account_name = api.get_account_name()
-            characters = api.get_character_names()
-            professions = []
-            for character in characters:
-                profession = api.get_profession_name(character)
-                professions.append(profession)
-            print(f"Account: {account_name}")
+            characters = api.get_characters()
+            print(f"Account name: \n- {account_name}")
             print("API key permissions:")
-            for key_permission in key_permissions:
-                print(f"- {key_permission}")
+            for permission in permissions:
+                print(f"- {permission.capitalize()}")
             print("Characters:")
-            for character, profession in zip(characters, professions):
-                print(f"- {character} ({profession})")
+            for character_name, profession_name in characters.items():
+                print(f"- {character_name} ({profession_name})")
         else:
             print("Insufficient API key permissions.")
     else:
