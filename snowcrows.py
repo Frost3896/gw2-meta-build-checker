@@ -24,7 +24,7 @@ class Snowcrows:
 
     def __init__(self) -> None:
         """Initialize an instance of the Snowcrows class."""
-        self._BASE_URL = "https://snowcrows.com/builds"
+        self._BASE_URL = "https://snowcrows.com/builds/"
         self._HEADERS = {
             "User-Agent": (
                 "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) "
@@ -54,26 +54,30 @@ class Snowcrows:
     @functools.lru_cache(maxsize=None)
     def get_build_names(self, profession_name: str) -> list[str]:
         """Get a list of build names for the specified profession name."""
+        # Convert the profession name to lowercase.
+        profession_name = profession_name.lower()
+        # Retrieve build names from both featured and beginner categories.
         build_names = []
-        for category in ["recommended", "effective"]:
+        for category in ["featured", "beginner"]:
             url = (
-                f"{self._BASE_URL}"
-                f"?profession={profession_name}&category={category}"
+                f"{self._BASE_URL}{profession_name}?category={category}"
             )
             html_content = self._get_html_content(url)
-            # Extract text from <h2> elements, excluding "Related guides"
+            # Extract text from <h2> elements, excluding "Related guides".
             h2_elements = [
                 element.text
                 for element in html_content.find_all("h2")
                 if "Related guides" not in element.text
             ]
-            # Append text from <h2> elements to the build_names list
+            # Append text from <h2> elements to the build names list.
             build_names.extend(h2_elements)
         return build_names
 
     @functools.lru_cache(maxsize=None)
-    def get_build(self, profession_name: str, build_name: str):
-        """Get detailed information for a specific build name."""
+    def get_build(self, profession_name: str, build_name: str) -> Build:
+        """Get detailed build information for a specific build name."""
+        # Convert the profession name to lowercase.
+        profession_name = profession_name
         build_name = build_name.lower().replace(" ", "-")
         url = (
             f"{self._BASE_URL}"
@@ -85,8 +89,8 @@ class Snowcrows:
 
 if __name__ == "__main__":
     snowcrows = Snowcrows()
-    profession_name = "PROFESSION-NAME"
+    profession_name = "<PROFESSION_NAME>"
     build_names = snowcrows.get_build_names(profession_name)
     print(f"Available builds for {profession_name}:")
-    for name in build_names:
-        print(name)
+    for build_name in build_names:
+        print(f"- {build_name}")
