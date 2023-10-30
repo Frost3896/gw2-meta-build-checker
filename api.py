@@ -14,7 +14,7 @@ class Api:
 
     def _clear_cache(self) -> None:
         """Clear the cache for all decorated methods."""
-        self.check_key.cache_clear()
+        self.get_key_permissions.cache_clear()
         self.get_account_name.cache_clear()
         self.get_character_names.cache_clear()
         self.get_profession_name.cache_clear()
@@ -130,22 +130,18 @@ class Api:
             self._api_key = api_key
             self._clear_cache()
 
-    @functools.lru_cache(maxsize=None)
     def check_key(self) -> bool:
-        """Check if the API key is valid and has correct permissions."""
+        """Check if the API key is valid."""
         tokeninfo = self._get_endpoint_v2("tokeninfo")
         if tokeninfo == "Invalid access token":
             return False
-        permissions = tokeninfo["permissions"]
-        if "account" not in permissions:
-            return False
-        if "builds" not in permissions:
-            return False
-        if "characters" not in permissions:
-            return False
-        if "inventories" not in permissions:
-            return False
         return True
+
+    @functools.lru_cache(maxsize=None)
+    def get_key_permissions(self) -> list[str]:
+        """Get the permissions for the API key."""
+        key_permissions = self._get_endpoint_v2("tokeninfo")
+        return key_permissions["permissions"]
 
     @functools.lru_cache(maxsize=None)
     def get_account_name(self) -> str:
@@ -222,16 +218,28 @@ class Api:
 
 if __name__ == "__main__":
     api = Api()
-    api_key = api.set_api_key("API-KEY")
+    api.set_api_key("API-KEY")
     key_valid = api.check_key()
-    account_name = api.get_account_name()
-    characters = api.get_character_names()
-    professions = []
-    for character in characters:
-        profession = api.get_profession_name(character)
-        professions.append(profession)
-    print(f"Key valid: {key_valid}")
-    print(f"Account name: {account_name}")
-    print("Characters:")
-    for character, profession in zip(characters, professions):
-        print(f"{character} - {profession}")
+    if key_valid:
+        key_permissions = api.get_key_permissions()
+        if ("account" in key_permissions and
+            "characters" in key_permissions and
+            "builds" in key_permissions and
+                "inventories" in key_permissions):
+            account_name = api.get_account_name()
+            characters = api.get_character_names()
+            professions = []
+            for character in characters:
+                profession = api.get_profession_name(character)
+                professions.append(profession)
+            print(f"Account: {account_name}")
+            print("API key permissions:")
+            for key_permission in key_permissions:
+                print(f"- {key_permission}")
+            print("Characters:")
+            for character, profession in zip(characters, professions):
+                print(f"- {character} ({profession})")
+        else:
+            print("Insufficient API key permissions.")
+    else:
+        print("Invalid API key.")
