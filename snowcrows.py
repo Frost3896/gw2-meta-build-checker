@@ -54,13 +54,15 @@ class Snowcrows:
     @functools.lru_cache(maxsize=None)
     def get_build_names(self, profession_name: str) -> list[str]:
         """Get a list of build names for the specified profession name."""
-        # Convert the profession name to lowercase.
+        # Convert profession name to lowercase.
         profession_name = profession_name.lower()
         # Retrieve build names from both featured and beginner categories.
         build_names = []
         for category in ["featured", "beginner"]:
+            # Assemble URL and request html content.
             url = (
-                f"{self._BASE_URL}{profession_name}?category={category}"
+                f"{self._BASE_URL}"
+                f"{profession_name}?category={category}"
             )
             html_content = self._get_html_content(url)
             # Extract text from <h2> elements, excluding "Related guides".
@@ -69,22 +71,30 @@ class Snowcrows:
                 for element in html_content.find_all("h2")
                 if "Related guides" not in element.text
             ]
-            # Append text from <h2> elements to the build names list.
+            # Remove trailing whitespace in text from <h2> elements.
+            for i in range(len(h2_elements)):
+                h2_elements[i] = h2_elements[i].rstrip()
+            # Append text from <h2> elements to build names.
             build_names.extend(h2_elements)
         return build_names
 
     @functools.lru_cache(maxsize=None)
     def get_build(self, profession_name: str, build_name: str) -> Build:
         """Get detailed build information for a specific build name."""
-        # Convert the profession name to lowercase.
-        profession_name = profession_name
+        # Convert profession name to lowercase.
+        profession_name = profession_name.lower()
+        # Convert build name to lowercase and replace space with hyphen.
         build_name = build_name.lower().replace(" ", "-")
+        # Extract specialization name from build name.
+        specialization_name = build_name.rsplit("-", 1)[-1]
+        print(f"Specialization name: {specialization_name}")
+        # Assemble URL and request html content.
         url = (
             f"{self._BASE_URL}"
-            f"/{profession_name}/{build_name}"
+            f"{profession_name}/{specialization_name}/{build_name}"
         )
         html_content = self._get_html_content(url)
-        # To be done
+        return None
 
 
 if __name__ == "__main__":
