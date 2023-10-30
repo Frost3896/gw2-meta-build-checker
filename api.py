@@ -186,12 +186,12 @@ class Api:
         return trait_name["name"]
 
     @functools.lru_cache(maxsize=None)
-    def get_item_stat_name(self, item_stat_id: int) -> str:
-        """Get the name of an item stat by its ID."""
-        item_stat_name = self._get_endpoint_v2(
-            f"itemstats/{item_stat_id}"
+    def get_item_stats_name(self, item_stats_id: int) -> str:
+        """Get the name of item stats by its ID."""
+        item_stats_name = self._get_endpoint_v2(
+            f"itemstats/{item_stats_id}"
         )
-        return item_stat_name["name"]
+        return item_stats_name["name"]
 
     def get_build_templates(self, character: str) -> list[Build]:
         """Get build templates for a character."""
