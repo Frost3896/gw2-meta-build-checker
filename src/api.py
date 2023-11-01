@@ -2,8 +2,8 @@ import requests
 import functools
 from build import (
     Skill,
-    Specialization,
     Trait,
+    Specialization,
     Build
 )
 from equipment import (
@@ -42,92 +42,125 @@ class Api:
         self, buildtabs_json
     ) -> list[Build]:
         """Parse build templates from JSON data."""
+
+        # Initialize an empty list to store build templates.
         build_templates = []
-        for item in buildtabs_json:
-            build_data = item["build"]
+
+        # Loop through keys in the JSON data.
+        for key in buildtabs_json:
+            # Extract build data from the key.
+            build_data = key["build"]
             build_name = build_data["name"]
             skills_data = build_data["skills"]
             specializations_data = build_data["specializations"]
-            # Skip build if build name is empty.
+
+            # Skip the build if the name is empty.
             if not build_name:
                 continue
-            # Parse skills.
+
+            # Initialize an empty list to store skills.
             skills = []
+
+            # Parse skills based on their type.
             for skill_type, skill in skills_data.items():
                 if not skill:
+                    # Handle the case when a skill is missing.
                     skills.append(
                         Skill(
-                            skill_id=0,
-                            skill_name=""
+                            id=0,
+                            name=""
                         )
                     )
                 elif isinstance(skill, int):
+                    # Handle the case when a skill is an integer.
                     skill_id = skill
                     skills.append(
                         Skill(
-                            skill_id=skill_id,
-                            skill_name=self.get_skill_name(skill_id)
+                            id=skill_id,
+                            name=self.get_skill_name(skill_id)
                         )
                     )
                 elif isinstance(skill, list):
+                    # Handle the case when skills are provided as a list.
                     for skill_id in skill:
                         if not skill_id:
                             skills.append(
                                 Skill(
-                                    skill_id=0,
-                                    skill_name=""
+                                    id=0,
+                                    name=""
                                 )
                             )
                         elif isinstance(skill_id, int):
                             skills.append(
                                 Skill(
-                                    skill_id=skill_id,
-                                    skill_name=self.get_skill_name(skill_id)
+                                    id=skill_id,
+                                    name=self.get_skill_name(skill_id)
                                 )
                             )
-            # Parse specializations and traits.
+
+            # Initialize an empty list to store specializations.
             specializations = []
-            traits = []
+
+            # Parse specializations and their associated traits.
             for specialization in specializations_data:
+                # Initialize an empty list to store traits.
+                traits = []
                 if not specialization["id"]:
+                    # Handle the case when a specialization is missing.
+                    for _ in range(3):
+                        traits.append(
+                            Trait(
+                                id=0,
+                                name=""
+                            )
+                        )
                     specializations.append(
                         Specialization(
-                            specialization_id=0,
-                            specialization_name=""
+                            id=0,
+                            name="",
+                            traits=traits
                         )
                     )
                 elif isinstance(specialization["id"], int):
+                    # Handle the case when a specialization is an integer.
+                    for trait_id in specialization["traits"]:
+                        if not trait_id:
+                            # Handle the case when a trait is missing.
+                            traits.append(
+                                Trait(
+                                    id=0,
+                                    name=""
+                                )
+                            )
+                        elif isinstance(trait_id, int):
+                            # Handle the case when a trait is an integer.
+                            traits.append(
+                                Trait(
+                                    id=trait_id,
+                                    name=self.get_trait_name(trait_id)
+                                )
+                            )
                     specializations.append(
                         Specialization(
-                            specialization_id=specialization["id"],
-                            specialization_name=self.get_specialization_name(
+                            id=specialization["id"],
+                            name=self.get_specialization_name(
                                 specialization["id"]
-                            )
+                            ),
+                            traits=traits
                         )
                     )
-                for trait_id in specialization["traits"]:
-                    if not trait_id:
-                        traits.append(
-                            Trait(
-                                trait_id=0,
-                                trait_name=""
-                            )
-                        )
-                    elif isinstance(trait_id, int):
-                        traits.append(
-                            Trait(
-                                trait_id=trait_id,
-                                trait_name=self.get_trait_name(trait_id)
-                            )
-                        )
-            # Create a build with a name, skills, specializations and traits.
+
+            # Create a build with a name, skills and specializations.
             build = Build(
-                build_name=build_name,
+                name=build_name,
                 skills=skills,
-                specializations=specializations,
-                traits=traits
+                specializations=specializations
             )
+
+            # Add the build to the list of parsed build templates.
             build_templates.append(build)
+
+        # Return the list of parsed build templates.
         return build_templates
 
     def _parse_equipment_templates(
