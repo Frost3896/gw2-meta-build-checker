@@ -54,40 +54,44 @@ class Snowcrows:
     @functools.lru_cache(maxsize=None)
     def get_build_names(self, profession_name: str) -> list[str]:
         """Get a list of build names for the specified profession name."""
-        # Convert profession name to lowercase.
+
+        # Prepare and normalize input data to be used in the URL.
         profession_name = profession_name.lower()
-        # Retrieve build names from both featured and beginner categories.
+
+        # Initialize an empty list to store build names.
         build_names = []
+
+        # Retrieve build names from both "featured" and "beginner" categories.
         for category in ["featured", "beginner"]:
-            # Assemble URL and request html content.
+            # Assemble the URL and request the HTML content.
             url = (
                 f"{self._BASE_URL}"
                 f"{profession_name}?category={category}"
             )
             html_content = self._get_html_content(url)
-            # Extract text from <h2> elements, excluding "Related guides".
-            h2_elements = [
-                element.text
-                for element in html_content.find_all("h2")
-                if "Related guides" not in element.text
-            ]
-            # Remove trailing whitespace in text from <h2> elements.
-            for i in range(len(h2_elements)):
-                h2_elements[i] = h2_elements[i].rstrip()
-            # Append text from <h2> elements to build names.
-            build_names.extend(h2_elements)
+
+            # Add non-"Related guides" h2 elements to the list of build names.
+            for element in html_content.find_all("h2"):
+                if "Related guides" not in element.text:
+                    build_names.append(element.text)
+
+        # Strip trailing whitespace from the list of build names.
+        for i in range(len(build_names)):
+            build_names[i] = build_names[i].rstrip()
+
+        # Return the list of build names.
         return build_names
 
     @functools.lru_cache(maxsize=None)
     def get_build(self, profession_name: str, build_name: str) -> Build:
         """Get detailed build information for a specific build name."""
-        # Convert profession name to lowercase.
+
+        # Prepare and normalize input data to be used in the URL.
         profession_name = profession_name.lower()
-        # Convert build name to lowercase and replace space with hyphen.
         build_name = build_name.lower().replace(" ", "-")
-        # Extract specialization name from build name.
         specialization_name = build_name.rsplit("-", 1)[-1]
-        # Assemble URL and request html content.
+
+        # Assemble the URL and request the HTML content.
         url = (
             f"{self._BASE_URL}"
             f"{profession_name}/{specialization_name}/{build_name}"
