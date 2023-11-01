@@ -3,8 +3,8 @@ import functools
 from bs4 import BeautifulSoup
 from build import (
     Skill,
-    Specialization,
     Trait,
+    Specialization,
     Build
 )
 from equipment import (
