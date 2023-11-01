@@ -4,29 +4,29 @@ from dataclasses import dataclass
 @dataclass
 class Stats:
     """Represent stats with an ID and name."""
-    stats_id: int
-    stats_name: str
+    id: int
+    name: str
 
 
 @dataclass
 class Upgrade:
     """Represent an upgrade with an ID and name."""
-    upgrade_id: int
-    upgrade_name: str
+    id: int
+    name: str
 
 
 @dataclass
 class Infusion:
     """Represent an infusion with an ID and name."""
-    infusion_id: int
-    infusion_name: str
+    id: int
+    name: str
 
 
 @dataclass
 class Relic:
     """Represent a relic with an ID and name."""
-    relic_id: int
-    relic_name: str
+    id: int
+    name: str
 
 
 @dataclass
@@ -58,7 +58,7 @@ class Accessory:
 @dataclass
 class Equipment:
     """Represent an equipment with a name, armor, accessories and weapons."""
-    equipment_name: str
+    name: str
     armor: list[Armor]
     weapons: list[Weapon]
     accessories: list[Accessory]
