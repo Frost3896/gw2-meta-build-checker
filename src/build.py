@@ -4,28 +4,28 @@ from dataclasses import dataclass
 @dataclass
 class Skill:
     """Represent a skill with an ID and name."""
-    skill_id: int
-    skill_name: str
-
-
-@dataclass
-class Specialization:
-    """Represent a specialization with an ID and name."""
-    specialization_id: int
-    specialization_name: str
+    id: int
+    name: str
 
 
 @dataclass
 class Trait:
     """Represent a trait with an ID and name."""
-    trait_id: int
-    trait_name: str
+    id: int
+    name: str
+
+
+@dataclass
+class Specialization:
+    """Represent a specialization with an ID, name and traits."""
+    id: int
+    name: str
+    traits: list[Trait]
 
 
 @dataclass
 class Build:
-    """Represent a build with a name, skills, specializations and traits."""
-    build_name: str
+    """Represent a build with a name, skills and specializations."""
+    name: str
     skills: list[Skill]
     specializations: list[Specialization]
-    traits: list[Trait]
