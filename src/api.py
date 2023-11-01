@@ -46,9 +46,9 @@ class Api:
         # Initialize an empty list to store build templates.
         build_templates = []
 
-        # Loop through keys in the JSON data.
+        # Loop through the keys in the JSON data.
         for key in buildtabs_json:
-            # Extract build data from the key.
+            # Extract the build data from the key.
             build_data = key["build"]
             build_name = build_data["name"]
             skills_data = build_data["skills"]
@@ -157,10 +157,10 @@ class Api:
                 specializations=specializations
             )
 
-            # Add the build to the list of parsed build templates.
+            # Add the build to the list of build templates.
             build_templates.append(build)
 
-        # Return the list of parsed build templates.
+        # Return the list of build templates.
         return build_templates
 
     def _parse_equipment_templates(
