@@ -87,7 +87,6 @@ class Snowcrows:
         build_name = build_name.lower().replace(" ", "-")
         # Extract specialization name from build name.
         specialization_name = build_name.rsplit("-", 1)[-1]
-        print(f"Specialization name: {specialization_name}")
         # Assemble URL and request html content.
         url = (
             f"{self._BASE_URL}"
