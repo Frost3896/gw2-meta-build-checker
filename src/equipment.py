@@ -31,7 +31,7 @@ class Relic:
 
 @dataclass
 class Armor:
-    """Represent an armor piece with a slot, stats, upgrade and infusion."""
+    """Represent an armor with a slot, stats, upgrade and infusion."""
     slot: str
     stats: Stats
     upgrade: Upgrade
@@ -57,9 +57,9 @@ class Accessory:
 
 @dataclass
 class Equipment:
-    """Represent an equipment with a name, armor, accessories and weapons."""
+    """Represent an equipment with a name, armors, accessories and weapons."""
     name: str
-    armor: list[Armor]
+    armors: list[Armor]
     weapons: list[Weapon]
     accessories: list[Accessory]
     relic: Relic
