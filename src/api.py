@@ -61,10 +61,10 @@ class Api:
         # Initialize an empty list to store build templates.
         build_templates = []
 
-        # Loop through the elements in the JSON data.
-        for element in buildtabs_json:
-            # Extract keys from the element.
-            build_data = element["build"]
+        # Loop through the buildtabs in the JSON data.
+        for buildtab in buildtabs_json:
+            # Extract keys from the buildtab.
+            build_data = buildtab["build"]
             build_name = build_data["name"]
             skills_data = build_data["skills"]
             specializations_data = build_data["specializations"]
@@ -227,11 +227,11 @@ class Api:
         # Initialize an empty list to store equipment templates.
         equipment_templates = []
 
-        # Loop through the elements in the JSON data.
-        for element in equipmenttabs_json:
-            # Extract keys from the element.
-            equipment_data = element["equipment"]
-            equipment_name = element["name"]
+        # Loop through the equipmenttabs in the JSON data.
+        for equipmenttab in equipmenttabs_json:
+            # Extract keys from the equipmenttab.
+            equipment_data = equipmenttab["equipment"]
+            equipment_name = equipmenttab["name"]
 
             # Skip the equipment if the name is empty.
             if not equipment_name:
