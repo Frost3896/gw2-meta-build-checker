@@ -73,8 +73,9 @@ class Api:
             if not build_name:
                 continue
 
-            # Initialize an empty list to store skills.
+            # Initialize empty lists to store skills and specializations.
             skills = []
+            specializations = []
 
             # Parse skills based on their type.
             for skill_type, skill in skills_data.items():
@@ -106,9 +107,6 @@ class Api:
                                     name=self.get_skill_name(skill_id)
                                 )
                             )
-
-            # Initialize an empty list to store specializations.
-            specializations = []
 
             # Parse specializations and their associated traits.
             for specialization in specializations_data:
@@ -145,7 +143,7 @@ class Api:
                         )
                     )
 
-            # Create a build with a name, skills and specializations.
+            # Create a build with a name and components.
             build = Build(
                 name=build_name,
                 skills=skills,
@@ -197,32 +195,32 @@ class Api:
         EMPTY_ACCESSORY = Accessory(
             slot="",
             stats=EMPTY_STATS,
-            infusions=[EMPTY_INFUSION] * 2
+            infusions=[EMPTY_INFUSION] * 3
         )
 
         # Define the desired order for armor, weapon, and accessory slots.
-        ARMOR_SLOTS = [
+        ARMOR_SLOTS = (
             "Helm",
             "Shoulders",
             "Coat",
             "Gloves",
             "Leggings",
             "Boots"
-        ]
-        WEAPON_SLOTS = [
+        )
+        WEAPON_SLOTS = (
             "WeaponA1",
             "WeaponA2",
             "WeaponB1",
             "WeaponB2"
-        ]
-        ACCESSORY_SLOTS = [
+        )
+        ACCESSORY_SLOTS = (
             "Backpack",
             "Accessory1",
             "Accessory2",
             "Amulet",
             "Ring1",
-            "Ring2",
-        ]
+            "Ring2"
+        )
 
         # Initialize an empty list to store equipment templates.
         equipment_templates = []
@@ -241,55 +239,167 @@ class Api:
             if not equipment_data:
                 continue
 
-            # Initialize empty lists to store armor, weapons and accessories.
-            armor = [EMPTY_ARMOR] * 6
+            # Initialize empty lists to store armors, weapons and accessories.
+            armors = [EMPTY_ARMOR] * 6
             weapons = [EMPTY_WEAPON] * 4
-            accessories =[EMPTY_ACCESSORY] * 6
+            accessories = [EMPTY_ACCESSORY] * 6
 
             # Loop through the items in the equipment data.
             for item in equipment_data:
                 # Extract keys from the item.
-                if "slot" in item:
-                    equipment_slot = item["slot"]
-                if "stats" in item:
-                    stats_data = item["stats"]
-                if "upgrades" in item:
-                    upgrades_data = item["upgrades"]
-                if "infusions" in item:
-                    infusions_data = item["upgrades"]
+                item_slot = item["slot"]
 
-                if item["slot"] in ARMOR_SLOTS:
-                elif item["slot"] in WEAPON_SLOTS:
-                elif item["slot"] in ACCESSORY_SLOTS:
-                elif item["slot"] == "Relic":
+                if item_slot in ARMOR_SLOTS:
+                    slot = item_slot
+                    if "stats" not in item:
+                        stats = EMPTY_STATS
+                    else:
+                        stats_data = item["stats"]
+                        stats_id = stats_data["id"]
+                        stats_name = self.get_stats_name(
+                            stats_id
+                        )
+                        stats = Stats(
+                            id=stats_id,
+                            name=stats_name
+                        )
+                    if "upgrades" not in item:
+                        upgrade = EMPTY_UPGRADE
+                    else:
+                        upgrades_data = item["upgrades"]
+                        upgrade_id = upgrades_data[0]
+                        upgrade_name = self.get_item_name(
+                            upgrade_id
+                        )
+                        upgrade = Upgrade(
+                            id=upgrade_id,
+                            name=upgrade_name
+                        )
+                    if "infusions" not in item:
+                        infusion = EMPTY_INFUSION
+                    else:
+                        infusions_data = item["infusions"]
+                        infusion_id = infusions_data[0]
+                        infusion_name = self.get_item_name(
+                            infusion_id
+                        )
+                        infusion = Infusion(
+                            id=infusion_id,
+                            name=infusion_name
+                        )
+                    armors[ARMOR_SLOTS.index(item_slot)] = Armor(
+                        slot=slot,
+                        stats=stats,
+                        upgrade=upgrade,
+                        infusion=infusion
+                    )
+
+                elif item_slot in WEAPON_SLOTS:
+                    slot = item_slot
+                    if "stats" not in item:
+                        stats = EMPTY_STATS
+                    else:
+                        stats_data = item["stats"]
+                        stats_id = stats_data["id"]
+                        stats_name = self.get_stats_name(
+                            stats_id
+                        )
+                        stats = Stats(
+                            id=stats_id,
+                            name=stats_name
+                        )
+                    if "upgrades" not in item:
+                        upgrades = [EMPTY_UPGRADE] * 2
+                    else:
+                        upgrades_data = item["upgrades"]
+                        upgrades = []
+                        for upgrade in upgrades_data:
+                            upgrade_id = upgrade
+                            upgrade_name = self.get_item_name(
+                                upgrade_id
+                            )
+                            upgrades.append(
+                                Upgrade(
+                                    id=upgrade_id,
+                                    name=upgrade_name
+                                )
+                            )
+                    if "infusions" not in item:
+                        infusions = [EMPTY_INFUSION] * 2
+                    else:
+                        infusions_data = item["infusions"]
+                        infusions = []
+                        for infusion in infusions_data:
+                            infusion_id = infusion
+                            infusion_name = self.get_item_name(
+                                infusion_id
+                            )
+                            infusions.append(
+                                Infusion(
+                                    id=infusion_id,
+                                    name=infusion_name
+                                )
+                            )
+                    weapons[WEAPON_SLOTS.index(item_slot)] = Weapon(
+                        slot=slot,
+                        stats=stats,
+                        upgrades=upgrades,
+                        infusions=infusions
+                    )
+
+                elif item_slot in ACCESSORY_SLOTS:
+                    slot = item_slot
+                    if "stats" not in item:
+                        stats = EMPTY_STATS
+                    else:
+                        stats_data = item["stats"]
+                        stats_id = stats_data["id"]
+                        stats_name = self.get_stats_name(
+                            stats_id
+                        )
+                        stats = Stats(
+                            id=stats_id,
+                            name=stats_name
+                        )
+                    if "infusions" not in item:
+                        infusions = [EMPTY_INFUSION] * 3
+                    else:
+                        infusions_data = item["infusions"]
+                        infusions = []
+                        for infusion in infusions_data:
+                            infusion_id = infusion
+                            infusion_name = self.get_item_name(
+                                infusion_id
+                            )
+                            infusions.append(
+                                Infusion(
+                                    id=infusion_id,
+                                    name=infusion_name
+                                )
+                            )
+                    accessories[ACCESSORY_SLOTS.index(item_slot)] = Accessory(
+                        slot=slot,
+                        stats=stats,
+                        infusions=infusions
+                    )
+
+                elif item_slot == "Relic":
                     relic = EMPTY_RELIC
-                    
 
+            # Create an equipment with a name and components.
+            equipment = Equipment(
+                name=equipment_name,
+                armors=armors,
+                weapons=weapons,
+                accessories=accessories,
+                relic=relic
+            )
 
+            # Add the equipment to the list of equipment templates.
+            equipment_templates.append(equipment)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        # Return the list of equipment templates.
+        return equipment_templates
 
     def set_api_key(self, api_key: str) -> None:
         """Set the API key and clear the cache if the key changes."""
