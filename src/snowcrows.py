@@ -39,16 +39,16 @@ class Snowcrows:
         self.get_build.cache_clear()
 
     def _get_html_content(self, url: str) -> BeautifulSoup:
-        """Request website content and parse it into a BeautifulSoup object."""
+        """Request a website and parse it into a BeautifulSoup object."""
         website = requests.get(url, headers=self._HEADERS)
         return BeautifulSoup(website.content, "html.parser")
 
-    def _parse_build(self) -> Build:
-        # To be done
+    def _parse_build(self, html_data: BeautifulSoup) -> Build:
+        """Parse a build from HTML data."""
         return build
 
-    def _parse_equipment(self) -> Equipment:
-        # To be done
+    def _parse_equipment(self, html_data: BeautifulSoup) -> Equipment:
+        """Parse an equipment from HTML data."""
         return equipment
 
     @functools.lru_cache(maxsize=None)
@@ -83,8 +83,10 @@ class Snowcrows:
         return build_names
 
     @functools.lru_cache(maxsize=None)
-    def get_build(self, profession_name: str, build_name: str) -> Build:
-        """Get detailed build information for a specific build name."""
+    def get_build(
+        self, profession_name: str, build_name: str
+    ) -> tuple[Build, Equipment]:
+        """Get detailed information for a specific build name."""
 
         # Prepare and normalize input data to be used in the URL.
         profession_name = profession_name.lower()
@@ -97,7 +99,13 @@ class Snowcrows:
             f"{profession_name}/{specialization_name}/{build_name}"
         )
         html_content = self._get_html_content(url)
-        return None
+
+        # Parse the build and equipment from the HTML data.
+        build = self._parse_build(html_content)
+        equipment = self._parse_equipment(html_content)
+
+        # Return the tuple containing a build and an equipment.
+        return build, equipment
 
 
 if __name__ == "__main__":
