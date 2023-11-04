@@ -43,13 +43,28 @@ class Api:
     ) -> list[Build]:
         """Parse build templates from JSON data."""
 
+        # Define empty instances for skill, trait, and specialization.
+        EMPTY_SKILL = Skill(
+            id=0,
+            name=""
+        )
+        EMPTY_TRAIT = Trait(
+            id=0,
+            name=""
+        )
+        EMPTY_SPECIALIZATION = Specialization(
+            id=0,
+            name="",
+            traits=[EMPTY_TRAIT] * 3
+        )
+
         # Initialize an empty list to store build templates.
         build_templates = []
 
-        # Loop through the keys in the JSON data.
-        for key in buildtabs_json:
-            # Extract the build data from the key.
-            build_data = key["build"]
+        # Loop through the elements in the JSON data.
+        for element in buildtabs_json:
+            # Extract keys from the element.
+            build_data = element["build"]
             build_name = build_data["name"]
             skills_data = build_data["skills"]
             specializations_data = build_data["specializations"]
@@ -66,10 +81,7 @@ class Api:
                 if not skill:
                     # Handle the case when a skill is missing.
                     skills.append(
-                        Skill(
-                            id=0,
-                            name=""
-                        )
+                        EMPTY_SKILL
                     )
                 elif isinstance(skill, int):
                     # Handle the case when a skill is an integer.
@@ -85,10 +97,7 @@ class Api:
                     for skill_id in skill:
                         if not skill_id:
                             skills.append(
-                                Skill(
-                                    id=0,
-                                    name=""
-                                )
+                                EMPTY_SKILL
                             )
                         elif isinstance(skill_id, int):
                             skills.append(
@@ -107,19 +116,8 @@ class Api:
                 traits = []
                 if not specialization["id"]:
                     # Handle the case when a specialization is missing.
-                    for _ in range(3):
-                        traits.append(
-                            Trait(
-                                id=0,
-                                name=""
-                            )
-                        )
                     specializations.append(
-                        Specialization(
-                            id=0,
-                            name="",
-                            traits=traits
-                        )
+                        EMPTY_SPECIALIZATION
                     )
                 elif isinstance(specialization["id"], int):
                     # Handle the case when a specialization is an integer.
@@ -127,10 +125,7 @@ class Api:
                         if not trait_id:
                             # Handle the case when a trait is missing.
                             traits.append(
-                                Trait(
-                                    id=0,
-                                    name=""
-                                )
+                                EMPTY_TRAIT
                             )
                         elif isinstance(trait_id, int):
                             # Handle the case when a trait is an integer.
@@ -167,8 +162,134 @@ class Api:
         self, equipmenttabs_json
     ) -> list[Equipment]:
         """Parse equipment templates from JSON data."""
+
+        # Define empty instances for stats, upgrade, infusion and relic.
+        EMPTY_STATS = Stats(
+            id=0,
+            name=""
+        )
+        EMPTY_UPGRADE = Upgrade(
+            id=0,
+            name=""
+        )
+        EMPTY_INFUSION = Infusion(
+            id=0,
+            name=""
+        )
+        EMPTY_RELIC = Relic(
+            id=0,
+            name=""
+        )
+
+        # Define empty instances for armor, weapon and accessory.
+        EMPTY_ARMOR = Armor(
+            slot="",
+            stats=EMPTY_STATS,
+            upgrade=EMPTY_UPGRADE,
+            infusion=EMPTY_INFUSION
+        )
+        EMPTY_WEAPON = Weapon(
+            slot="",
+            stats=EMPTY_STATS,
+            upgrades=[EMPTY_UPGRADE] * 2,
+            infusions=[EMPTY_INFUSION] * 2
+        )
+        EMPTY_ACCESSORY = Accessory(
+            slot="",
+            stats=EMPTY_STATS,
+            infusions=[EMPTY_INFUSION] * 2
+        )
+
+        # Define the desired order for armor, weapon, and accessory slots.
+        ARMOR_SLOTS = [
+            "Helm",
+            "Shoulders",
+            "Coat",
+            "Gloves",
+            "Leggings",
+            "Boots"
+        ]
+        WEAPON_SLOTS = [
+            "WeaponA1",
+            "WeaponA2",
+            "WeaponB1",
+            "WeaponB2"
+        ]
+        ACCESSORY_SLOTS = [
+            "Backpack",
+            "Accessory1",
+            "Accessory2",
+            "Amulet",
+            "Ring1",
+            "Ring2",
+        ]
+
+        # Initialize an empty list to store equipment templates.
         equipment_templates = []
-        return equipment_templates
+
+        # Loop through the elements in the JSON data.
+        for element in equipmenttabs_json:
+            # Extract keys from the element.
+            equipment_data = element["equipment"]
+            equipment_name = element["name"]
+
+            # Skip the equipment if the name is empty.
+            if not equipment_name:
+                continue
+
+            # Skip the equipment if the equipment data is empty.
+            if not equipment_data:
+                continue
+
+            # Initialize empty lists to store armor, weapons and accessories.
+            armor = [EMPTY_ARMOR] * 6
+            weapons = [EMPTY_WEAPON] * 4
+            accessories =[EMPTY_ACCESSORY] * 6
+
+            # Loop through the items in the equipment data.
+            for item in equipment_data:
+                # Extract keys from the item.
+                if "slot" in item:
+                    equipment_slot = item["slot"]
+                if "stats" in item:
+                    stats_data = item["stats"]
+                if "upgrades" in item:
+                    upgrades_data = item["upgrades"]
+                if "infusions" in item:
+                    infusions_data = item["upgrades"]
+
+                if item["slot"] in ARMOR_SLOTS:
+                elif item["slot"] in WEAPON_SLOTS:
+                elif item["slot"] in ACCESSORY_SLOTS:
+                elif item["slot"] == "Relic":
+                    relic = EMPTY_RELIC
+                    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     def set_api_key(self, api_key: str) -> None:
         """Set the API key and clear the cache if the key changes."""
