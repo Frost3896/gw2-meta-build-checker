@@ -179,25 +179,6 @@ class Api:
             name=""
         )
 
-        # Define empty instances for armor, weapon and accessory.
-        EMPTY_ARMOR = Armor(
-            slot="",
-            stats=EMPTY_STATS,
-            upgrade=EMPTY_UPGRADE,
-            infusion=EMPTY_INFUSION
-        )
-        EMPTY_WEAPON = Weapon(
-            slot="",
-            stats=EMPTY_STATS,
-            upgrades=[EMPTY_UPGRADE] * 2,
-            infusions=[EMPTY_INFUSION] * 2
-        )
-        EMPTY_ACCESSORY = Accessory(
-            slot="",
-            stats=EMPTY_STATS,
-            infusions=[EMPTY_INFUSION] * 3
-        )
-
         # Define the desired order for armor, weapon, and accessory slots.
         ARMOR_SLOTS = (
             "Helm",
@@ -240,9 +221,37 @@ class Api:
                 continue
 
             # Initialize empty lists to store armors, weapons and accessories.
-            armors = [EMPTY_ARMOR] * 6
-            weapons = [EMPTY_WEAPON] * 4
-            accessories = [EMPTY_ACCESSORY] * 6
+            armors = []
+            weapons = []
+            accessories = []
+
+            # Create armors, weapons and accessories for each slot.
+            for slot in ARMOR_SLOTS:
+                armor = Armor(
+                    slot=slot,
+                    stats=EMPTY_STATS,
+                    upgrade=EMPTY_UPGRADE,
+                    infusion=EMPTY_INFUSION
+                )
+                armors.append(armor)
+            for slot in WEAPON_SLOTS:
+                weapon = Weapon(
+                    slot=slot,
+                    stats=EMPTY_STATS,
+                    upgrades=[EMPTY_UPGRADE] * 2,
+                    infusions=[EMPTY_INFUSION] * 2
+                )
+                weapons.append(weapon)
+            for slot in ACCESSORY_SLOTS:
+                accessory = Accessory(
+                    slot=slot,
+                    stats=EMPTY_STATS,
+                    infusions=[EMPTY_INFUSION] * 3
+                )
+                accessories.append(accessory)
+
+            # Create a relic.
+            relic = EMPTY_RELIC
 
             # Loop through the items in the equipment data.
             for item in equipment_data:
