@@ -259,10 +259,13 @@ class Api:
                 item_slot = item["slot"]
 
                 if item_slot in ARMOR_SLOTS:
+                    # Parse armors based on the slot.
                     slot = item_slot
                     if "stats" not in item:
+                        # Handle the case when stats are missing.
                         stats = EMPTY_STATS
                     else:
+                        # Handle the case when stats are available.
                         stats_data = item["stats"]
                         stats_id = stats_data["id"]
                         stats_name = self.get_stats_name(
@@ -273,8 +276,10 @@ class Api:
                             name=stats_name
                         )
                     if "upgrades" not in item:
+                        # Handle the case when upgrades are missing.
                         upgrade = EMPTY_UPGRADE
                     else:
+                        # Handle the case when upgrades are available.
                         upgrades_data = item["upgrades"]
                         upgrade_id = upgrades_data[0]
                         upgrade_name = self.get_item_name(
@@ -285,8 +290,10 @@ class Api:
                             name=upgrade_name
                         )
                     if "infusions" not in item:
+                        # Handle the case when infusions are missing.
                         infusion = EMPTY_INFUSION
                     else:
+                        # Handle the case when infusions are available.
                         infusions_data = item["infusions"]
                         infusion_id = infusions_data[0]
                         infusion_name = self.get_item_name(
@@ -304,10 +311,13 @@ class Api:
                     )
 
                 elif item_slot in WEAPON_SLOTS:
+                    # Parse weapons based on the slot.
                     slot = item_slot
                     if "stats" not in item:
+                        # Handle the case when stats are missing.
                         stats = EMPTY_STATS
                     else:
+                        # Handle the case when stats are available.
                         stats_data = item["stats"]
                         stats_id = stats_data["id"]
                         stats_name = self.get_stats_name(
@@ -318,8 +328,10 @@ class Api:
                             name=stats_name
                         )
                     if "upgrades" not in item:
+                        # Handle the case when upgrades are missing.
                         upgrades = [EMPTY_UPGRADE] * 2
                     else:
+                        # Handle the case when upgrades are available.
                         upgrades_data = item["upgrades"]
                         upgrades = []
                         for upgrade in upgrades_data:
@@ -334,8 +346,10 @@ class Api:
                                 )
                             )
                     if "infusions" not in item:
+                        # Handle the case when infusions are missing.
                         infusions = [EMPTY_INFUSION] * 2
                     else:
+                        # Handle the case when infusions are available.
                         infusions_data = item["infusions"]
                         infusions = []
                         for infusion in infusions_data:
@@ -357,10 +371,13 @@ class Api:
                     )
 
                 elif item_slot in ACCESSORY_SLOTS:
+                    # Parse accessories based on the slot.
                     slot = item_slot
                     if "stats" not in item:
+                        # Handle the case when stats are missing.
                         stats = EMPTY_STATS
                     else:
+                        # Handle the case when stats are available.
                         stats_data = item["stats"]
                         stats_id = stats_data["id"]
                         stats_name = self.get_stats_name(
@@ -371,8 +388,10 @@ class Api:
                             name=stats_name
                         )
                     if "infusions" not in item:
+                        # Handle the case when infusions are missing.
                         infusions = [EMPTY_INFUSION] * 3
                     else:
+                        # Handle the case when infusions are available.
                         infusions_data = item["infusions"]
                         infusions = []
                         for infusion in infusions_data:
@@ -393,7 +412,8 @@ class Api:
                     )
 
                 elif item_slot == "Relic":
-                    relic = EMPTY_RELIC
+                    # Parse the relic based on the slot.
+                    relic = EMPTY_RELIC  # Not yet available from the API.
 
             # Create an equipment with a name and components.
             equipment = Equipment(
