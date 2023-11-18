@@ -43,21 +43,6 @@ class Api:
     ) -> list[Build]:
         """Parse build templates from JSON data."""
 
-        # Define empty instances for skill, trait, and specialization.
-        EMPTY_SKILL = Skill(
-            id=0,
-            name=""
-        )
-        EMPTY_TRAIT = Trait(
-            id=0,
-            name=""
-        )
-        EMPTY_SPECIALIZATION = Specialization(
-            id=0,
-            name="",
-            traits=[EMPTY_TRAIT] * 3
-        )
-
         # Initialize an empty list to store build templates.
         build_templates = []
 
@@ -82,7 +67,7 @@ class Api:
                 if not skill:
                     # Handle the case when a skill is missing.
                     skills.append(
-                        EMPTY_SKILL
+                        Skill.empty()
                     )
                 elif isinstance(skill, int):
                     # Handle the case when a skill is an integer.
@@ -98,7 +83,7 @@ class Api:
                     for skill_id in skill:
                         if not skill_id:
                             skills.append(
-                                EMPTY_SKILL
+                                Skill.empty()
                             )
                         elif isinstance(skill_id, int):
                             skills.append(
@@ -115,7 +100,7 @@ class Api:
                 if not specialization["id"]:
                     # Handle the case when a specialization is missing.
                     specializations.append(
-                        EMPTY_SPECIALIZATION
+                        Specialization.empty()
                     )
                 elif isinstance(specialization["id"], int):
                     # Handle the case when a specialization is an integer.
@@ -123,7 +108,7 @@ class Api:
                         if not trait_id:
                             # Handle the case when a trait is missing.
                             traits.append(
-                                EMPTY_TRAIT
+                                Trait.empty()
                             )
                         elif isinstance(trait_id, int):
                             # Handle the case when a trait is an integer.
@@ -160,24 +145,6 @@ class Api:
         self, equipmenttabs_json
     ) -> list[Equipment]:
         """Parse equipment templates from JSON data."""
-
-        # Define empty instances for stats, upgrade, infusion and relic.
-        EMPTY_STATS = Stats(
-            id=0,
-            name=""
-        )
-        EMPTY_UPGRADE = Upgrade(
-            id=0,
-            name=""
-        )
-        EMPTY_INFUSION = Infusion(
-            id=0,
-            name=""
-        )
-        EMPTY_RELIC = Relic(
-            id=0,
-            name=""
-        )
 
         # Define the desired order for armor, weapon, and accessory slots.
         ARMOR_SLOTS = (
@@ -229,29 +196,29 @@ class Api:
             for slot in ARMOR_SLOTS:
                 armor = Armor(
                     slot=slot,
-                    stats=EMPTY_STATS,
-                    upgrade=EMPTY_UPGRADE,
-                    infusion=EMPTY_INFUSION
+                    stats=Stats.empty(),
+                    upgrade=Upgrade.empty(),
+                    infusion=Infusion.empty()
                 )
                 armors.append(armor)
             for slot in WEAPON_SLOTS:
                 weapon = Weapon(
                     slot=slot,
-                    stats=EMPTY_STATS,
-                    upgrades=[EMPTY_UPGRADE] * 2,
-                    infusions=[EMPTY_INFUSION] * 2
+                    stats=Stats.empty(),
+                    upgrades=[Upgrade.empty()] * 2,
+                    infusions=[Infusion.empty()] * 2
                 )
                 weapons.append(weapon)
             for slot in ACCESSORY_SLOTS:
                 accessory = Accessory(
                     slot=slot,
-                    stats=EMPTY_STATS,
-                    infusions=[EMPTY_INFUSION] * 3
+                    stats=Stats.empty(),
+                    infusions=[Infusion.empty()] * 3
                 )
                 accessories.append(accessory)
 
             # Create a relic.
-            relic = EMPTY_RELIC
+            relic = Relic.empty()
 
             # Loop through the items in the equipment data.
             for item in equipment_data:
@@ -263,7 +230,7 @@ class Api:
                     slot = item_slot
                     if "stats" not in item:
                         # Handle the case when stats are missing.
-                        stats = EMPTY_STATS
+                        stats = Stats.empty()
                     else:
                         # Handle the case when stats are available.
                         stats_data = item["stats"]
@@ -277,7 +244,7 @@ class Api:
                         )
                     if "upgrades" not in item:
                         # Handle the case when upgrades are missing.
-                        upgrade = EMPTY_UPGRADE
+                        upgrade = Upgrade.empty()
                     else:
                         # Handle the case when upgrades are available.
                         upgrades_data = item["upgrades"]
@@ -291,7 +258,7 @@ class Api:
                         )
                     if "infusions" not in item:
                         # Handle the case when infusions are missing.
-                        infusion = EMPTY_INFUSION
+                        infusion = Infusion.empty()
                     else:
                         # Handle the case when infusions are available.
                         infusions_data = item["infusions"]
@@ -315,7 +282,7 @@ class Api:
                     slot = item_slot
                     if "stats" not in item:
                         # Handle the case when stats are missing.
-                        stats = EMPTY_STATS
+                        stats = Stats.empty()
                     else:
                         # Handle the case when stats are available.
                         stats_data = item["stats"]
@@ -329,7 +296,7 @@ class Api:
                         )
                     if "upgrades" not in item:
                         # Handle the case when upgrades are missing.
-                        upgrades = [EMPTY_UPGRADE] * 2
+                        upgrades = [Upgrade.empty()] * 2
                     else:
                         # Handle the case when upgrades are available.
                         upgrades_data = item["upgrades"]
@@ -347,7 +314,7 @@ class Api:
                             )
                     if "infusions" not in item:
                         # Handle the case when infusions are missing.
-                        infusions = [EMPTY_INFUSION] * 2
+                        infusions = [Infusion.empty()] * 2
                     else:
                         # Handle the case when infusions are available.
                         infusions_data = item["infusions"]
@@ -375,7 +342,7 @@ class Api:
                     slot = item_slot
                     if "stats" not in item:
                         # Handle the case when stats are missing.
-                        stats = EMPTY_STATS
+                        stats = Stats.empty()
                     else:
                         # Handle the case when stats are available.
                         stats_data = item["stats"]
@@ -389,7 +356,7 @@ class Api:
                         )
                     if "infusions" not in item:
                         # Handle the case when infusions are missing.
-                        infusions = [EMPTY_INFUSION] * 3
+                        infusions = [Infusion.empty()] * 3
                     else:
                         # Handle the case when infusions are available.
                         infusions_data = item["infusions"]
@@ -413,7 +380,7 @@ class Api:
 
                 elif item_slot == "Relic":
                     # Parse the relic based on the slot.
-                    relic = EMPTY_RELIC  # Not yet available from the API.
+                    relic = Relic.empty()  # Not yet available from the API.
 
             # Create an equipment with a name and components.
             equipment = Equipment(
