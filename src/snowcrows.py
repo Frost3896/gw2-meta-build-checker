@@ -1,6 +1,9 @@
 import requests
 import functools
-from bs4 import BeautifulSoup
+from bs4 import (
+    BeautifulSoup,
+    Tag
+)
 from build import (
     Skill,
     Trait,
@@ -43,12 +46,53 @@ class Snowcrows:
         website = requests.get(url, headers=self._HEADERS)
         return BeautifulSoup(website.content, "html.parser")
 
-    def _parse_build(self, html_data: BeautifulSoup) -> Build:
-        """Parse a build from HTML data."""
+    def _parse_build(
+        self, build_name: str, html_content: BeautifulSoup
+    ) -> Build:
+        """Parse a build from HTML content."""
+
+        # Initialize empty lists to store skills and specializations.
+        skills = []
+        specializations = []
+
+        # Find the HTML tag containing skills data.
+        skills_data_tag = html_content.find(
+            "div",
+            class_=("bg-neutral-800 "
+                    "bg-opacity-20 "
+                    "p-4 "
+                    "md:p-6 "
+                    "rounded-lg "
+                    "border "
+                    "border-neutral-900 "
+                    "mt-0")
+        )
+
+        # Create a build with a name and components.
+        build = Build(
+            name=build_name,
+            skills=skills,
+            specializations=specializations
+        )
+
+        # Return the build.
         return build
 
-    def _parse_equipment(self, html_data: BeautifulSoup) -> Equipment:
-        """Parse an equipment from HTML data."""
+    def _parse_equipment(
+        self, equipment_name: str, html_content: BeautifulSoup
+    ) -> Equipment:
+        """Parse an equipment from HTML content."""
+
+        # Create an equipment with a name and components.
+        equipment = Equipment(
+            name=equipment_name,
+            armors=armors,
+            weapons=weapons,
+            accessories=accessories,
+            relic=relic
+        )
+
+        # Return the equipment.
         return equipment
 
     @functools.lru_cache(maxsize=None)
@@ -56,7 +100,7 @@ class Snowcrows:
         """Get a list of build names for the specified profession name."""
 
         # Prepare and normalize input data to be used in the URL.
-        profession_name = profession_name.lower()
+        normalized_profession_name = profession_name.lower()
 
         # Initialize an empty list to store build names.
         build_names = []
@@ -66,7 +110,8 @@ class Snowcrows:
             # Assemble the URL and request the HTML content.
             url = (
                 f"{self._BASE_URL}"
-                f"{profession_name}?category={category}"
+                f"{normalized_profession_name}"
+                f"?category={category}"
             )
             html_content = self._get_html_content(url)
 
@@ -89,20 +134,24 @@ class Snowcrows:
         """Get detailed information for a specific build name."""
 
         # Prepare and normalize input data to be used in the URL.
-        profession_name = profession_name.lower()
-        build_name = build_name.lower().replace(" ", "-")
-        specialization_name = build_name.rsplit("-", 1)[-1]
+        normalized_profession_name = profession_name.lower()
+        normalized_build_name = build_name.lower().replace(" ", "-")
+        normalized_specialization_name = (
+            normalized_build_name.rsplit("-", 1)[-1]
+        )
 
         # Assemble the URL and request the HTML content.
         url = (
             f"{self._BASE_URL}"
-            f"{profession_name}/{specialization_name}/{build_name}"
+            f"{normalized_profession_name}/"
+            f"{normalized_specialization_name}/"
+            f"{normalized_build_name}"
         )
         html_content = self._get_html_content(url)
 
-        # Parse the build and equipment from the HTML data.
-        build = self._parse_build(html_content)
-        equipment = self._parse_equipment(html_content)
+        # Parse the build and equipment from the HTML content.
+        build = self._parse_build(build_name, html_content)
+        equipment = self._parse_equipment(build_name, html_content)
 
         # Return the tuple containing a build and an equipment.
         return build, equipment
