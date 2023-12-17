@@ -1,8 +1,8 @@
 from dataclasses import dataclass
 
 # Define an empty ID and name.
-_EMPTY_ID = 0
-_EMPTY_NAME = ""
+EMPTY_ID = 0
+EMPTY_NAME = ""
 
 
 @dataclass
@@ -15,8 +15,8 @@ class Skill:
     def empty(cls):
         """Create an instance with empty values."""
         return cls(
-            id=_EMPTY_ID,
-            name=_EMPTY_NAME
+            id=EMPTY_ID,
+            name=EMPTY_NAME
         )
 
 
@@ -30,8 +30,8 @@ class Trait:
     def empty(cls):
         """Create an instance with empty values."""
         return cls(
-            id=_EMPTY_ID,
-            name=_EMPTY_NAME
+            id=EMPTY_ID,
+            name=EMPTY_NAME
         )
 
 
@@ -46,8 +46,8 @@ class Specialization:
     def empty(cls):
         """Create an instance with empty values."""
         return cls(
-            id=_EMPTY_ID,
-            name=_EMPTY_NAME,
+            id=EMPTY_ID,
+            name=EMPTY_NAME,
             traits=[Trait.empty()] * 3
         )
 
@@ -63,7 +63,7 @@ class Build:
     def empty(cls):
         """Create an instance with empty values."""
         return cls(
-            name=_EMPTY_NAME,
+            name=EMPTY_NAME,
             skills=[Skill.empty()] * 5,
             specializations=[Specialization.empty()] * 3
         )
