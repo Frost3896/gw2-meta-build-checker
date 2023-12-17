@@ -1,9 +1,33 @@
 from dataclasses import dataclass
 
 # Define an empty ID, name and slot.
-_EMPTY_ID = 0
-_EMPTY_NAME = ""
-_EMPTY_SLOT = ""
+EMPTY_ID = 0
+EMPTY_NAME = ""
+EMPTY_SLOT = ""
+
+# Define the desired order for armor, weapon, and accessory slots.
+ARMOR_SLOTS = (
+    "Helm",
+    "Shoulders",
+    "Coat",
+    "Gloves",
+    "Leggings",
+    "Boots"
+)
+WEAPON_SLOTS = (
+    "WeaponA1",
+    "WeaponA2",
+    "WeaponB1",
+    "WeaponB2"
+)
+ACCESSORY_SLOTS = (
+    "Backpack",
+    "Accessory1",
+    "Accessory2",
+    "Amulet",
+    "Ring1",
+    "Ring2"
+)
 
 
 @dataclass
@@ -16,8 +40,8 @@ class Stats:
     def empty(cls):
         """Create an instance with empty values."""
         return cls(
-            id=_EMPTY_ID,
-            name=_EMPTY_NAME
+            id=EMPTY_ID,
+            name=EMPTY_NAME
         )
 
 
@@ -31,8 +55,8 @@ class Upgrade:
     def empty(cls):
         """Create an instance with empty values."""
         return cls(
-            id=_EMPTY_ID,
-            name=_EMPTY_NAME
+            id=EMPTY_ID,
+            name=EMPTY_NAME
         )
 
 
@@ -46,8 +70,8 @@ class Infusion:
     def empty(cls):
         """Create an instance with empty values."""
         return cls(
-            id=_EMPTY_ID,
-            name=_EMPTY_NAME
+            id=EMPTY_ID,
+            name=EMPTY_NAME
         )
 
 
@@ -61,8 +85,8 @@ class Relic:
     def empty(cls):
         """Create an instance with empty values."""
         return cls(
-            id=_EMPTY_ID,
-            name=_EMPTY_NAME
+            id=EMPTY_ID,
+            name=EMPTY_NAME
         )
 
 
@@ -78,7 +102,7 @@ class Armor:
     def empty(cls):
         """Create an instance with empty values."""
         return cls(
-            slot=_EMPTY_SLOT,
+            slot=EMPTY_SLOT,
             stats=Stats.empty(),
             upgrade=Upgrade.empty(),
             infusion=Infusion.empty()
@@ -97,7 +121,7 @@ class Weapon:
     def empty(cls):
         """Create an instance with empty values."""
         return cls(
-            slot=_EMPTY_SLOT,
+            slot=EMPTY_SLOT,
             stats=Stats.empty(),
             upgrades=[Upgrade.empty()] * 2,
             infusions=[Infusion.empty()] * 2
@@ -115,7 +139,7 @@ class Accessory:
     def empty(cls):
         """Create an instance with empty values."""
         return cls(
-            slot=_EMPTY_SLOT,
+            slot=EMPTY_SLOT,
             stats=Stats.empty(),
             infusions=[Infusion.empty()] * 3
         )
@@ -134,7 +158,7 @@ class Equipment:
     def empty(cls):
         """Create an instance with empty values."""
         return cls(
-            name=_EMPTY_NAME,
+            name=EMPTY_NAME,
             armors=[Armor.empty()] * 6,
             weapons=[Weapon.empty()] * 4,
             accessories=[Accessory.empty()] * 6,
