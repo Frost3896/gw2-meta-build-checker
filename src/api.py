@@ -7,6 +7,9 @@ from build import (
     Build
 )
 from equipment import (
+    ARMOR_SLOTS,
+    WEAPON_SLOTS,
+    ACCESSORY_SLOTS,
     Stats,
     Upgrade,
     Infusion,
@@ -145,30 +148,6 @@ class Api:
         self, equipmenttabs_json
     ) -> list[Equipment]:
         """Parse equipment templates from JSON data."""
-
-        # Define the desired order for armor, weapon, and accessory slots.
-        ARMOR_SLOTS = (
-            "Helm",
-            "Shoulders",
-            "Coat",
-            "Gloves",
-            "Leggings",
-            "Boots"
-        )
-        WEAPON_SLOTS = (
-            "WeaponA1",
-            "WeaponA2",
-            "WeaponB1",
-            "WeaponB2"
-        )
-        ACCESSORY_SLOTS = (
-            "Backpack",
-            "Accessory1",
-            "Accessory2",
-            "Amulet",
-            "Ring1",
-            "Ring2"
-        )
 
         # Initialize an empty list to store equipment templates.
         equipment_templates = []
