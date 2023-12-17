@@ -5,12 +5,14 @@ from bs4 import (
     Tag
 )
 from build import (
+    EMPTY_NAME,
     Skill,
     Trait,
     Specialization,
     Build
 )
 from equipment import (
+    EMPTY_ID,
     Stats,
     Upgrade,
     Infusion,
@@ -55,8 +57,12 @@ class Snowcrows:
         skills = []
         specializations = []
 
-        # Find the HTML tag containing skills data.
-        skills_data_tag = html_content.find(
+        # Create skills and specializations for each slot.
+        skills = [Skill.empty()] * 5
+        specializations = [Specialization.empty()] * 3
+
+        # Find the HTML tag containing the skills data.
+        html_tag = html_content.find(
             "div",
             class_=("bg-neutral-800 "
                     "bg-opacity-20 "
@@ -67,6 +73,52 @@ class Snowcrows:
                     "border-neutral-900 "
                     "mt-0")
         )
+        if isinstance(html_tag, Tag):
+            html_tag = html_tag.find(
+                attrs={"data-armory-ids": True}
+            )
+
+        # Extract the skills data from the HTML tag.
+        if isinstance(html_tag, Tag) and "data-armory-ids" in html_tag.attrs:
+            skills_data = str(html_tag["data-armory-ids"]).split(",")
+            for i, skill in enumerate(skills_data):
+                skill_id = int(skill)
+                skill_name = EMPTY_NAME
+                skills[i] = Skill(
+                    id=skill_id,
+                    name=skill_name
+                )
+
+        # Find the HTML tags containing the specializations data.
+        html_tags = html_content.find_all(
+            "div", style="display: block !important;"
+        )
+
+        # Extract the specializations data from the HTML tags.
+        if html_tags:
+            for i, html_tag in enumerate(html_tags):
+                specializations_data = str(html_tag["data-armory-ids"])
+                traits_data = (
+                    str(
+                        html_tag[f"data-armory-{specializations_data}-traits"]
+                    )
+                    .split(",")
+                )
+                specialization_id = int(specializations_data)
+                specialization_name = EMPTY_NAME
+                traits = [Trait.empty()] * 3
+                for j, trait in enumerate(traits_data):
+                    trait_id = int(trait)
+                    trait_name = EMPTY_NAME
+                    traits[j] = Trait(
+                        id=trait_id,
+                        name=trait_name
+                    )
+                specializations[i] = Specialization(
+                    id=specialization_id,
+                    name=specialization_name,
+                    traits=traits
+                )
 
         # Create a build with a name and components.
         build = Build(
