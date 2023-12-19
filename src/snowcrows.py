@@ -94,7 +94,9 @@ class Snowcrows:
 
         # Find the HTML tags containing the specializations data.
         html_tags = html_content.find_all(
-            "div", style="display: block !important;"
+            "div",
+            attrs={"data-armory-ids": True},
+            style="display: block !important;"
         )
 
         # Extract the specializations data from the HTML tags.
@@ -170,6 +172,74 @@ class Snowcrows:
 
         # Create a relic.
         relic = Relic.empty()
+
+        # Find the HTML tags containing the equipment data.
+        html_tags = html_content.find_all("td")
+
+        # Extract the equipment data from the HTML tags.
+        if html_tags:
+            equipment_data = html_tags
+
+            # Initialize special item slot indicators.
+            slot_indicator = "A"
+            main_hand_slot = 1
+            off_hand_slot = 1
+            ring_slot = 1
+            accessory_slot = 1
+
+            # Loop through the equipment data in steps of 2.
+            for i in range(0, len(equipment_data), 2):
+                # Extract the item data from the equipment data.
+                item_data = equipment_data[i].div
+
+                # Extract the item id from the item data.
+                item_id = int(item_data["data-armory-ids"])
+
+                # Break the loop if an irrelevant item is found.
+                if i > 24 and str(item_data) == (
+                        f"<div data-armory-embed=\"items\" "
+                        f"data-armory-ids=\"{item_id}\"></div>"
+                        ):
+                    break
+
+                # Extract the item slot from the equipment data.
+                item_slot = str(equipment_data[i + 1].p.span.string)
+
+                # Match the item slot to the slot naming scheme of the API.
+                if item_slot == "Main Hand":
+                    if main_hand_slot == 1:
+                        slot_indicator = "A"
+                    else:
+                        slot_indicator = "B"
+                    item_slot = f"Weapon{slot_indicator}1"
+                    main_hand_slot += 1
+                if item_slot == "Off Hand":
+                    if off_hand_slot == 1 and main_hand_slot == 2:
+                        slot_indicator = "A"
+                    else:
+                        slot_indicator = "B"
+                    item_slot = f"Weapon{slot_indicator}2"
+                    off_hand_slot += 1
+                if item_slot == "Ring":
+                    item_slot = f"Ring{ring_slot}"
+                    ring_slot += 1
+                if item_slot == "Accessory":
+                    item_slot = f"Accessory{accessory_slot}"
+                    accessory_slot += 1
+                if item_slot == "Backpiece":
+                    item_slot = "Backpack"
+
+                #if item_slot != "Relic":
+                #    item_stats = str(html_tags[i + 1].p.contents[0]).split(" ")[0]
+                #    print(item_stats)
+                #print(item_slot)
+                #print(str(item_data))
+
+
+
+
+
+
 
         # Create an equipment with a name and components.
         equipment = Equipment(
