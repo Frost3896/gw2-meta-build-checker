@@ -13,6 +13,9 @@ from build import (
 )
 from equipment import (
     EMPTY_ID,
+    ARMOR_SLOTS,
+    WEAPON_SLOTS,
+    ACCESSORY_SLOTS,
     Stats,
     Upgrade,
     Infusion,
@@ -134,6 +137,39 @@ class Snowcrows:
         self, equipment_name: str, html_content: BeautifulSoup
     ) -> Equipment:
         """Parse an equipment from HTML content."""
+
+        # Initialize empty lists to store armors, weapons and accessories.
+        armors = []
+        weapons = []
+        accessories = []
+
+        # Create armors, weapons and accessories for each slot.
+        for slot in ARMOR_SLOTS:
+            armor = Armor(
+                slot=slot,
+                stats=Stats.empty(),
+                upgrade=Upgrade.empty(),
+                infusion=Infusion.empty()
+            )
+            armors.append(armor)
+        for slot in WEAPON_SLOTS:
+            weapon = Weapon(
+                slot=slot,
+                stats=Stats.empty(),
+                upgrades=[Upgrade.empty()] * 2,
+                infusions=[Infusion.empty()] * 2
+            )
+            weapons.append(weapon)
+        for slot in ACCESSORY_SLOTS:
+            accessory = Accessory(
+                slot=slot,
+                stats=Stats.empty(),
+                infusions=[Infusion.empty()] * 3
+            )
+            accessories.append(accessory)
+
+        # Create a relic.
+        relic = Relic.empty()
 
         # Create an equipment with a name and components.
         equipment = Equipment(
