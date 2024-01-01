@@ -27,23 +27,3 @@ ACCESSORY_SLOTS = (
     "Ring1",
     "Ring2"
 )
-
-# Define the possible weapon types.
-WEAPON_TYPES = (
-    "Axe",
-    "Dagger",
-    "Mace",
-    "Pistol",
-    "Sword",
-    "Scepter",
-    "Focus",
-    "Shield",
-    "Torch",
-    "Warhorn",
-    "Greatsword",
-    "Hammer",
-    "Longbow",
-    "Rifle",
-    "ShortBow",
-    "Staff"
-)
