@@ -4,18 +4,21 @@ from bs4 import (
     BeautifulSoup,
     Tag
 )
-from build import (
+from constants import (
+    EMPTY_ID,
     EMPTY_NAME,
+    EMPTY_TYPE,
+    ARMOR_SLOTS,
+    WEAPON_SLOTS,
+    ACCESSORY_SLOTS
+)
+from build import (
     Skill,
     Trait,
     Specialization,
     Build
 )
 from equipment import (
-    EMPTY_ID,
-    ARMOR_SLOTS,
-    WEAPON_SLOTS,
-    ACCESSORY_SLOTS,
     Stats,
     Upgrade,
     Infusion,
@@ -157,6 +160,7 @@ class Snowcrows:
         for slot in WEAPON_SLOTS:
             weapon = Weapon(
                 slot=slot,
+                type=EMPTY_TYPE,
                 stats=Stats.empty(),
                 upgrades=[Upgrade.empty()] * 2,
                 infusions=[Infusion.empty()] * 2
@@ -229,17 +233,162 @@ class Snowcrows:
                 if item_slot == "Backpiece":
                     item_slot = "Backpack"
 
-                #if item_slot != "Relic":
-                #    item_stats = str(html_tags[i + 1].p.contents[0]).split(" ")[0]
-                #    print(item_stats)
-                #print(item_slot)
-                #print(str(item_data))
+                if item_slot in ARMOR_SLOTS:
+                    # Parse armors based on the slot.
+                    slot = item_slot
+                    if (
+                        f"data-armory-{item_id}-stat"
+                        not in str(item_data)
+                    ):
+                        # Handle the case when stats are missing.
+                        stats = Stats.empty()
+                    else:
+                        # Handle the case when stats are available.
+                        stats_data = (
+                            item_data[f"data-armory-{item_id}-stat"]
+                        )
+                        stats_id = int(stats_data)
+                        stats_name = EMPTY_NAME
+                        stats = Stats(
+                            id=stats_id,
+                            name=stats_name
+                        )
+                    if (
+                        f"data-armory-{item_id}-upgrades"
+                        not in str(item_data)
+                    ):
+                        # Handle the case when upgrades are missing.
+                        upgrade = Upgrade.empty()
+                    else:
+                        # Handle the case when upgrades are available.
+                        upgrades_data = (
+                            item_data[f"data-armory-{item_id}-upgrades"]
+                            .split(",")
+                        )
+                        upgrade_id = int(upgrades_data[0])
+                        upgrade_name = EMPTY_NAME
+                        upgrade = Upgrade(
+                            id=upgrade_id,
+                            name=upgrade_name
+                        )
+                    # Handle the case when infusions are missing.
+                    infusion = Infusion.empty()
+                    armors[ARMOR_SLOTS.index(item_slot)] = Armor(
+                        slot=slot,
+                        stats=stats,
+                        upgrade=upgrade,
+                        infusion=infusion
+                    )
 
+                elif item_slot in WEAPON_SLOTS:
+                    # Parse weapons based on the slot.
+                    slot = item_slot
+                    if not str(html_tags[i + 1].p.contents[0]).split(" ")[1]:
+                        # Handle the case when the type is missing.
+                        type = EMPTY_TYPE
+                    else:
+                        # Handle the case when the type is available.
+                        type_data = (
+                            str(
+                                html_tags[i + 1].p.contents[0]
+                            )
+                            .split(" ")[1]
+                        )
+                        type = str(type_data)
+                    if not str(html_tags[i + 1].p.contents[0]).split(" ")[0]:
+                        # Handle the case when stats are missing.
+                        stats = Stats.empty()
+                    else:
+                        # Handle the case when stats are available.
+                        stats_data = (
+                            str(
+                                html_tags[i + 1].p.contents[0]
+                            )
+                            .split(" ")[0]
+                        )
+                        stats_id = EMPTY_ID
+                        stats_name = str(stats_data)
+                        stats = Stats(
+                            id=stats_id,
+                            name=stats_name
+                        )
+                    if (
+                        f"data-armory-{item_id}-upgrades"
+                        not in str(item_data)
+                    ):
+                        # Handle the case when upgrades are missing.
+                        upgrades = [Upgrade.empty()] * 2
+                    else:
+                        # Handle the case when upgrades are available.
+                        upgrades_data = (
+                            item_data[f"data-armory-{item_id}-upgrades"]
+                            .split(",")
+                        )
+                        upgrades = []
+                        for upgrade in upgrades_data:
+                            upgrade_id = int(upgrade)
+                            upgrade_name = EMPTY_NAME
+                            upgrades.append(
+                                Upgrade(
+                                    id=upgrade_id,
+                                    name=upgrade_name
+                                )
+                            )
+                    # Handle the case when infusions are missing.
+                    infusions = [Infusion.empty()] * 2
+                    weapons[WEAPON_SLOTS.index(item_slot)] = Weapon(
+                        slot=slot,
+                        type=type,
+                        stats=stats,
+                        upgrades=upgrades,
+                        infusions=infusions
+                    )
 
+                elif item_slot in ACCESSORY_SLOTS:
+                    # Parse accessories based on the slot.
+                    slot = item_slot
+                    if (
+                        f"data-armory-{item_id}-stat"
+                        not in str(item_data)
+                    ):
+                        # Handle the case when stats are missing.
+                        stats = Stats.empty()
+                    else:
+                        # Handle the case when stats are available.
+                        stats_data = (
+                            item_data[f"data-armory-{item_id}-stat"]
+                        )
+                        stats_id = int(stats_data)
+                        stats_name = EMPTY_NAME
+                        stats = Stats(
+                            id=stats_id,
+                            name=stats_name
+                        )
+                    # Handle the case when infusions are missing.
+                    infusions = [Infusion.empty()] * 3
+                    accessories[ACCESSORY_SLOTS.index(item_slot)] = Accessory(
+                        slot=slot,
+                        stats=stats,
+                        infusions=infusions
+                    )
 
-
-
-
+                elif item_slot == "Relic":
+                    # Parse the relic based on the slot.
+                    if (
+                        "data-armory-ids"
+                        not in str(item_data)
+                    ):
+                        # Handle the case when the relic is missing.
+                        relic = Relic.empty()
+                    else:
+                        # Handle the case when the relic is available.
+                        relic_data = item_data["data-armory-ids"]
+                        relic_id = int(relic_data)
+                        relic_name = EMPTY_NAME
+                        relic = Relic(
+                            id=relic_id,
+                            name=relic_name
+                        )
 
         # Create an equipment with a name and components.
         equipment = Equipment(
