@@ -1,5 +1,11 @@
 import requests
 import functools
+from constants import (
+    EMPTY_TYPE,
+    ARMOR_SLOTS,
+    WEAPON_SLOTS,
+    ACCESSORY_SLOTS
+)
 from build import (
     Skill,
     Trait,
@@ -7,9 +13,6 @@ from build import (
     Build
 )
 from equipment import (
-    ARMOR_SLOTS,
-    WEAPON_SLOTS,
-    ACCESSORY_SLOTS,
     Stats,
     Upgrade,
     Infusion,
@@ -183,6 +186,7 @@ class Api:
             for slot in WEAPON_SLOTS:
                 weapon = Weapon(
                     slot=slot,
+                    type=EMPTY_TYPE,
                     stats=Stats.empty(),
                     upgrades=[Upgrade.empty()] * 2,
                     infusions=[Infusion.empty()] * 2
@@ -202,6 +206,7 @@ class Api:
             # Loop through the items in the equipment data.
             for item in equipment_data:
                 # Extract keys from the item.
+                item_id = item["id"]
                 item_slot = item["slot"]
 
                 if item_slot in ARMOR_SLOTS:
@@ -259,6 +264,7 @@ class Api:
                 elif item_slot in WEAPON_SLOTS:
                     # Parse weapons based on the slot.
                     slot = item_slot
+                    type = self.get_weapon_type(item_id)
                     if "stats" not in item:
                         # Handle the case when stats are missing.
                         stats = Stats.empty()
@@ -311,6 +317,7 @@ class Api:
                             )
                     weapons[WEAPON_SLOTS.index(item_slot)] = Weapon(
                         slot=slot,
+                        type=type,
                         stats=stats,
                         upgrades=upgrades,
                         infusions=infusions
@@ -392,14 +399,16 @@ class Api:
     @functools.lru_cache(maxsize=None)
     def get_permissions(self) -> list[str]:
         """Get the permissions associated with the API key."""
-        permissions = self._get_endpoint_v2("tokeninfo")
-        return permissions["permissions"]
+        permissions_data = self._get_endpoint_v2("tokeninfo")
+        permissions = permissions_data["permissions"]
+        return permissions
 
     @functools.lru_cache(maxsize=None)
     def get_account_name(self) -> str:
         """Get the account name associated with the API key."""
-        account_name = self._get_endpoint_v2("account")
-        return account_name["name"]
+        account_data = self._get_endpoint_v2("account")
+        account_name = account_data["name"]
+        return account_name
 
     @functools.lru_cache(maxsize=None)
     def get_characters(self) -> dict[str, str]:
@@ -417,42 +426,63 @@ class Api:
     @functools.lru_cache(maxsize=None)
     def get_skill_name(self, skill_id: int) -> str:
         """Get the name of a skill by its ID."""
-        skill_name = self._get_endpoint_v2(
+        skill_data = self._get_endpoint_v2(
             f"skills/{skill_id}"
         )
-        return skill_name["name"]
+        skill_name = skill_data["name"]
+        return skill_name
 
     @functools.lru_cache(maxsize=None)
     def get_specialization_name(self, specialization_id: int) -> str:
         """Get the name of a specialization by its ID."""
-        specialization_name = self._get_endpoint_v2(
+        specialization_data = self._get_endpoint_v2(
             f"specializations/{specialization_id}"
         )
-        return specialization_name["name"]
+        specialization_name = specialization_data["name"]
+        return specialization_name
 
     @functools.lru_cache(maxsize=None)
     def get_trait_name(self, trait_id: int) -> str:
         """Get the name of a trait by its ID."""
-        trait_name = self._get_endpoint_v2(
+        trait_data = self._get_endpoint_v2(
             f"traits/{trait_id}"
         )
-        return trait_name["name"]
+        trait_name = trait_data["name"]
+        return trait_name
+
+    @functools.lru_cache(maxsize=None)
+    def get_item_data(self, item_id: int):
+        """Get the data of an item by its ID."""
+        item_data = self._get_endpoint_v2(
+            f"items/{item_id}"
+        )
+        return item_data
 
     @functools.lru_cache(maxsize=None)
     def get_item_name(self, item_id: int) -> str:
         """Get the name of an item by its ID."""
-        item_name = self._get_endpoint_v2(
-            f"items/{item_id}"
-        )
-        return item_name["name"]
+        item_data = self.get_item_data(item_id)
+        item_name = item_data["name"]
+        return item_name
+
+    @functools.lru_cache(maxsize=None)
+    def get_weapon_type(self, item_id: int) -> str:
+        """Get the type of a weapon by its item ID."""
+        item_data = self.get_item_data(item_id)
+        if item_data["type"] == "Weapon":
+            weapon_type = item_data["details"]["type"]
+        else:
+            weapon_type = EMPTY_TYPE
+        return weapon_type
 
     @functools.lru_cache(maxsize=None)
     def get_stats_name(self, stats_id: int) -> str:
         """Get the name of stats by its ID."""
-        stats_name = self._get_endpoint_v2(
+        stats_data = self._get_endpoint_v2(
             f"itemstats/{stats_id}"
         )
-        return stats_name["name"]
+        stats_name = stats_data["name"]
+        return stats_name
 
     def get_build_templates(self, character: str) -> list[Build]:
         """Get build templates for a character."""
