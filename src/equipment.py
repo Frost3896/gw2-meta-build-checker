@@ -1,32 +1,9 @@
 from dataclasses import dataclass
-
-# Define an empty ID, name and slot.
-EMPTY_ID = 0
-EMPTY_NAME = ""
-EMPTY_SLOT = ""
-
-# Define the desired order for armor, weapon, and accessory slots.
-ARMOR_SLOTS = (
-    "Helm",
-    "Shoulders",
-    "Coat",
-    "Gloves",
-    "Leggings",
-    "Boots"
-)
-WEAPON_SLOTS = (
-    "WeaponA1",
-    "WeaponA2",
-    "WeaponB1",
-    "WeaponB2"
-)
-ACCESSORY_SLOTS = (
-    "Backpack",
-    "Accessory1",
-    "Accessory2",
-    "Amulet",
-    "Ring1",
-    "Ring2"
+from constants import (
+    EMPTY_ID,
+    EMPTY_NAME,
+    EMPTY_SLOT,
+    EMPTY_TYPE
 )
 
 
@@ -111,8 +88,9 @@ class Armor:
 
 @dataclass
 class Weapon:
-    """Represent a weapon with a slot, stats, upgrades and infusions."""
+    """Represent a weapon with a slot, type, stats, upgrades and infusions."""
     slot: str
+    type: str
     stats: Stats
     upgrades: list[Upgrade]
     infusions: list[Infusion]
@@ -122,6 +100,7 @@ class Weapon:
         """Create an instance with empty values."""
         return cls(
             slot=EMPTY_SLOT,
+            type=EMPTY_TYPE,
             stats=Stats.empty(),
             upgrades=[Upgrade.empty()] * 2,
             infusions=[Infusion.empty()] * 2

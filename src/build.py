@@ -1,8 +1,8 @@
 from dataclasses import dataclass
-
-# Define an empty ID and name.
-EMPTY_ID = 0
-EMPTY_NAME = ""
+from constants import (
+    EMPTY_ID,
+    EMPTY_NAME
+)
 
 
 @dataclass
