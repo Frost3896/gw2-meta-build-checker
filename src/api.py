@@ -41,7 +41,10 @@ class Api:
     def _get_endpoint_v2(self, endpoint: str):
         """Perform a GET request to the API and return the JSON response."""
         url = f"https://api.guildwars2.com/v2/{endpoint}"
-        headers = {"Authorization": f"Bearer {self._api_key}"}
+        headers = {
+            "Authorization": f"Bearer {self._api_key}",
+            "X-Schema-Version": "latest"
+        }
         return requests.get(url, headers=headers).json()
 
     def _parse_build_templates(
@@ -416,10 +419,11 @@ class Api:
         character_names = self._get_endpoint_v2("characters")
         profession_names = []
         for character_name in character_names:
-            profession_name = self._get_endpoint_v2(
+            character_data = self._get_endpoint_v2(
                 f"characters/{character_name}/core"
             )
-            profession_names.append(profession_name["profession"])
+            profession_name = character_data["profession"]
+            profession_names.append(profession_name)
         characters = dict(zip(character_names, profession_names))
         return characters
 
@@ -470,7 +474,8 @@ class Api:
         """Get the type of a weapon by its item ID."""
         item_data = self.get_item_data(item_id)
         if item_data["type"] == "Weapon":
-            weapon_type = item_data["details"]["type"]
+            weapon_type_data = item_data["details"]["type"]
+            weapon_type = weapon_type_data.lower().capitalize()
         else:
             weapon_type = EMPTY_TYPE
         return weapon_type
